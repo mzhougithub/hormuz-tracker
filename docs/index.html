@@ -21,31 +21,31 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>Strait of Hormuz Tracker</h1>
-    <p class="small">Two-source dashboard: (1) PortWatch chokepoint traffic, (2) market-implied GSI.</p>
+    <h1>Strait of Hormuz Tracker｜霍尔木兹海峡追踪</h1>
+    <p class="small">Two-source dashboard｜双数据源看板: (1) PortWatch chokepoint traffic｜PortWatch 海峡流量, (2) market-implied GSI｜市场隐含地缘情绪指数。</p>
 
     <div class="card">
       <div class="row">
-        <div><div class="k">Current GSI</div><div class="v" id="gsi">-</div></div>
-        <div><div class="k">Change vs prev</div><div class="v" id="delta">-</div></div>
-        <div><div class="k">Risk Level</div><div class="v" id="level">-</div></div>
-        <div><div class="k">Latest Hormuz Traffic</div><div class="v" id="traffic" style="font-size:22px">-</div></div>
+        <div><div class="k">Current GSI｜当前GSI</div><div class="v" id="gsi">-</div></div>
+        <div><div class="k">Change vs prev｜较前值变化</div><div class="v" id="delta">-</div></div>
+        <div><div class="k">Risk Level｜风险等级</div><div class="v" id="level">-</div></div>
+        <div><div class="k">Latest Hormuz Traffic｜最新海峡流量</div><div class="v" id="traffic" style="font-size:22px">-</div></div>
       </div>
       <p class="small" id="stamp"></p>
     </div>
 
     <div class="card">
-      <h3>Last 30 days — Strait of Hormuz traffic (daily vessel count)</h3>
+      <h3>Last 30 days — Strait of Hormuz traffic (daily vessel count)｜过去30天海峡流量（每日船舶数）</h3>
       <canvas id="trafficChart" height="240"></canvas>
     </div>
 
     <div class="card">
-      <h3>Last 30 days — GSI trend (daily latest)</h3>
+      <h3>Last 30 days — GSI trend (daily latest)｜过去30天GSI走势（按日最新值）</h3>
       <canvas id="gsiChart" height="240"></canvas>
     </div>
 
     <div class="card small">
-      <strong>Sources:</strong> IMF PortWatch public ArcGIS daily chokepoint data + local GSI model snapshots.
+      <strong>Sources｜数据来源:</strong> IMF PortWatch public ArcGIS daily chokepoint data + local GSI model snapshots｜IMF PortWatch公开ArcGIS每日海峡数据 + 本地GSI模型快照。
     </div>
   </div>
 
@@ -125,9 +125,9 @@
         const trafficSeries = data.hormuz_traffic_daily || [];
         const gsiSeries = data.gsi_daily || data.series || [];
         const t = trafficSeries[trafficSeries.length - 1];
-        document.getElementById('traffic').textContent = t ? `${fmtInt(t.n_total)} vessels` : 'N/A';
+        document.getElementById('traffic').textContent = t ? `${fmtInt(t.n_total)} vessels｜艘` : 'N/A';
 
-        document.getElementById('stamp').textContent = `Latest GSI snapshot: ${(L.time_hkt || 'N/A')} HKT · Updated: ${(data.generated_at_hkt || 'N/A')} HKT`;
+        document.getElementById('stamp').textContent = `Latest GSI snapshot｜最新GSI快照: ${(L.time_hkt || 'N/A')} HKT · Updated｜更新时间: ${(data.generated_at_hkt || 'N/A')} HKT`;
 
         if (trafficSeries.length) drawLine('trafficChart', trafficSeries, 'n_total', '#7fe3ff');
         if (gsiSeries.length) drawLine('gsiChart', gsiSeries, 'gsi', '#7aa2ff');
