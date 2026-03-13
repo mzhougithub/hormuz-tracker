@@ -15,30 +15,37 @@
     canvas { width: 100%; background: #0f1730; border-radius: 8px; }
     .up { color: #ff7f7f; }
     .down { color: #76dba7; }
+    h3 { margin: 0 0 8px 0; }
     @media (max-width: 760px) { .row { grid-template-columns: repeat(2, minmax(0,1fr)); } }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Strait of Hormuz Risk Tracker</h1>
-    <p class="small">Informational dashboard from market-implied Geopolitical Sentiment Index (GSI).</p>
+    <h1>Strait of Hormuz Tracker</h1>
+    <p class="small">Two-source dashboard: (1) PortWatch chokepoint traffic, (2) market-implied GSI.</p>
 
     <div class="card">
       <div class="row">
         <div><div class="k">Current GSI</div><div class="v" id="gsi">-</div></div>
         <div><div class="k">Change vs prev</div><div class="v" id="delta">-</div></div>
         <div><div class="k">Risk Level</div><div class="v" id="level">-</div></div>
-        <div><div class="k">Markets / Liquidity</div><div class="v" id="breadth" style="font-size:22px">-</div></div>
+        <div><div class="k">Latest Hormuz Traffic</div><div class="v" id="traffic" style="font-size:22px">-</div></div>
       </div>
       <p class="small" id="stamp"></p>
     </div>
 
     <div class="card">
-      <canvas id="chart" height="280"></canvas>
+      <h3>Last 30 days — Strait of Hormuz traffic (daily vessel count)</h3>
+      <canvas id="trafficChart" height="240"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>Last 30 days — GSI trend (daily latest)</h3>
+      <canvas id="gsiChart" height="240"></canvas>
     </div>
 
     <div class="card small">
-      <strong>How to read:</strong> Higher GSI suggests higher geopolitical risk being priced by tracked markets. This is not investment advice.
+      <strong>Sources:</strong> IMF PortWatch public ArcGIS daily chokepoint data + local GSI model snapshots.
     </div>
   </div>
 
@@ -46,14 +53,14 @@
     const fmtNum = (n, d=4) => Number(n).toLocaleString(undefined, {minimumFractionDigits:d, maximumFractionDigits:d});
     const fmtInt = (n) => Number(n).toLocaleString();
 
-    function drawChart(series) {
-      const c = document.getElementById('chart');
+    function drawLine(canvasId, series, valueKey, color) {
+      const c = document.getElementById(canvasId);
       const ctx = c.getContext('2d');
       const w = c.width = c.clientWidth * devicePixelRatio;
-      const h = c.height = 280 * devicePixelRatio;
+      const h = c.height = 240 * devicePixelRatio;
       const pad = 36 * devicePixelRatio;
 
-      const vals = series.map(x => x.gsi);
+      const vals = series.map(x => Number(x[valueKey]));
       const min = Math.min(...vals) * 0.95;
       const max = Math.max(...vals) * 1.05;
 
@@ -64,11 +71,11 @@
         ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(w-pad,y); ctx.stroke();
       }
 
-      ctx.strokeStyle = '#7aa2ff'; ctx.lineWidth = 2 * devicePixelRatio;
+      ctx.strokeStyle = color; ctx.lineWidth = 2 * devicePixelRatio;
       ctx.beginPath();
       series.forEach((p, i) => {
         const x = pad + (w-2*pad) * i / Math.max(1, series.length-1);
-        const y = h-pad - (p.gsi - min) / (max-min || 1) * (h-2*pad);
+        const y = h-pad - (Number(p[valueKey]) - min) / (max-min || 1) * (h-2*pad);
         if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
       });
       ctx.stroke();
@@ -81,9 +88,14 @@
       document.getElementById('delta').textContent = `${d>=0?'+':''}${fmtNum(d)}`;
       document.getElementById('delta').className = 'v ' + (d >= 0 ? 'up' : 'down');
       document.getElementById('level').textContent = L.risk_level;
-      document.getElementById('breadth').textContent = `${fmtInt(L.markets)} / ${fmtInt(L.liquidity)}`;
-      document.getElementById('stamp').textContent = `Latest snapshot: ${L.time_hkt} HKT · Updated: ${data.generated_at_hkt} HKT`;
-      drawChart(data.series);
+
+      const t = data.hormuz_traffic_daily[data.hormuz_traffic_daily.length - 1];
+      document.getElementById('traffic').textContent = t ? `${fmtInt(t.n_total)} vessels` : 'N/A';
+
+      document.getElementById('stamp').textContent = `Latest GSI snapshot: ${L.time_hkt} HKT · Updated: ${data.generated_at_hkt} HKT`;
+
+      drawLine('trafficChart', data.hormuz_traffic_daily, 'n_total', '#7fe3ff');
+      drawLine('gsiChart', data.gsi_daily, 'gsi', '#7aa2ff');
     });
   </script>
 </body>
