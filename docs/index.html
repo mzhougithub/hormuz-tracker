@@ -53,7 +53,7 @@
     const fmtNum = (n, d=4) => Number(n).toLocaleString(undefined, {minimumFractionDigits:d, maximumFractionDigits:d});
     const fmtInt = (n) => Number(n).toLocaleString();
 
-    function drawLine(canvasId, series, valueKey, color) {
+    function drawLine(canvasId, series, valueKey, color, yAxisTitle) {
       const c = document.getElementById(canvasId);
       const ctx = c.getContext('2d');
       const w = c.width = c.clientWidth * devicePixelRatio;
@@ -89,6 +89,14 @@
       // Axes lines
       ctx.strokeStyle = '#4b5f9f';
       ctx.beginPath(); ctx.moveTo(padL,padT); ctx.lineTo(padL,h-padB); ctx.lineTo(w-padR,h-padB); ctx.stroke();
+
+      // Axis titles (bilingual)
+      ctx.fillStyle = '#c8d5ff';
+      ctx.font = `${12 * devicePixelRatio}px system-ui`;
+      ctx.fillText(yAxisTitle, padL + 6 * devicePixelRatio, padT + 12 * devicePixelRatio);
+      const xTitle = 'Date｜日期';
+      const xTitleWidth = ctx.measureText(xTitle).width;
+      ctx.fillText(xTitle, w - padR - xTitleWidth, h - 10 * devicePixelRatio);
 
       // X labels (start/mid/end)
       const idx = [0, Math.floor((series.length - 1)/2), Math.max(0, series.length - 1)];
@@ -129,8 +137,8 @@
 
         document.getElementById('stamp').textContent = `Latest GSI snapshot｜最新GSI快照: ${(L.time_hkt || 'N/A')} HKT · Updated｜更新时间: ${(data.generated_at_hkt || 'N/A')} HKT`;
 
-        if (trafficSeries.length) drawLine('trafficChart', trafficSeries, 'n_total', '#7fe3ff');
-        if (gsiSeries.length) drawLine('gsiChart', gsiSeries, 'gsi', '#7aa2ff');
+        if (trafficSeries.length) drawLine('trafficChart', trafficSeries, 'n_total', '#7fe3ff', 'Vessels｜船舶数');
+        if (gsiSeries.length) drawLine('gsiChart', gsiSeries, 'gsi', '#7aa2ff', 'GSI｜指数值');
       })
       .catch(err => {
         document.getElementById('stamp').textContent = 'Data load error. Refresh in 1 minute.';
