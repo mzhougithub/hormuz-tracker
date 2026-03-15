@@ -1,17 +1,17 @@
 {
   "title": "Strait of Hormuz Risk Tracker",
-  "generated_at_hkt": "2026-03-15 17:37:55",
+  "generated_at_hkt": "2026-03-15 21:37:24",
   "sources": {
     "traffic": "IMF PortWatch Daily_Chokepoints_Data (public ArcGIS service)",
     "gsi": "Local geopolitical_risk_dashboard/risk_index.db"
   },
   "latest": {
-    "ts": 1773567466,
-    "time_hkt": "2026-03-15 17:37",
-    "gsi": 0.1432,
-    "markets": 39,
-    "liquidity": 8493696.27,
-    "delta": 0.0093,
+    "ts": 1773581840,
+    "time_hkt": "2026-03-15 21:37",
+    "gsi": 0.1366,
+    "markets": 38,
+    "liquidity": 8230783.2,
+    "delta": -0.0066,
     "risk_level": "Low"
   },
   "gsi_daily": [
@@ -65,7 +65,7 @@
     },
     {
       "date": "2026-03-15",
-      "gsi": 0.1432
+      "gsi": 0.1366
     }
   ],
   "hormuz_traffic_daily": [
